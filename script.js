@@ -30,7 +30,9 @@ Lynleit sat in the riverside cafe, sipping her iced coffee and listening to the 
 
 She reached up to adjust a tiny device in her ear, listening intently, with her eyes lost in the distance. Occasionally, she hummed in response to the person on the other end of the call.`;
 
-const paragraphs = text.split("\n");
+const paragraphs = text
+  .split("\n")
+  .filter((line) => line.trim() !== ""); // Add this line to filter out empty lines
 
 let currentParagraph = 0;
 let index = 0;
