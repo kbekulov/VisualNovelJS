@@ -9,35 +9,12 @@
 <body>
   <div class="vignette"></div>
   <div class="container">
-    <div id="content"></div>
+    <p id="content"></p>
   </div>
-  <script>
-    let orderNumber = 0;
-    const contentElement = document.getElementById('content');
-
-    function updateContent() {
-      if (orderNumber < textChunks.length) {
-        contentElement.innerHTML = '';
-        const pElement = document.createElement('p');
-        pElement.textContent = textChunks[orderNumber];
-        contentElement.appendChild(pElement);
-      } else {
-        console.error('Order number is out of range');
-      }
-    }
-
-    document.body.addEventListener('click', () => {
-      orderNumber++;
-      updateContent();
-    });
-
-    document.body.addEventListener('keyup', (event) => {
-      if (event.code === 'Space') {
-        orderNumber++;
-        updateContent();
-      }
-    });
-  </script>
   <script src="script.js"></script>
+  <script>
+    const order = 2;
+    window.history.replaceState({}, document.title, window.location.pathname + `?order=${order}`);
+  </script>
 </body>
 </html>
