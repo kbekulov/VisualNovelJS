@@ -32,6 +32,7 @@ async function init() {
   let index = 0;
   let textElement;
   let typingInProgress = false;
+  let typeInterval;
 
   function createParagraph() {
     const paragraph = document.createElement("p");
@@ -56,7 +57,7 @@ async function init() {
     textElement = createParagraph();
     typingInProgress = true;
 
-    const typeInterval = setInterval(() => {
+    typeInterval = setInterval(() => {
       if (index < paragraphs[currentParagraph].length) {
         textElement.textContent += paragraphs[currentParagraph].charAt(index);
         index++;
@@ -74,8 +75,17 @@ async function init() {
     }, 50);
   }
 
+  function autoComplete() {
+    if (typingInProgress) {
+      clearInterval(typeInterval);
+      textElement.textContent = paragraphs[currentParagraph];
+      typingInProgress = false;
+      index = paragraphs[currentParagraph].length;
+    }
+  }
+
   function nextParagraph() {
-    if (typingInProgress) return;
+    autoComplete();
 
     if (currentParagraph < paragraphs.length - 1) {
       const testParagraph = createParagraph();
