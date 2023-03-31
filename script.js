@@ -1,9 +1,24 @@
 const WORDS_PER_CHUNK = 200;
+let order = 1;
 
 function getQueryParam(name, defaultValue) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name) || defaultValue;
 }
+
+document.addEventListener('click', () => {
+  order = (order % chunks.length) + 1;
+  const content = chunks[order - 1];
+  contentElement.textContent = content;
+});
+
+document.addEventListener('keydown', event => {
+  if (event.code === 'Space') {
+    order = (order % chunks.length) + 1;
+    const content = chunks[order - 1];
+    contentElement.textContent = content;
+  }
+});
 
 fetch('text.txt')
   .then(response => response.text())
@@ -26,8 +41,8 @@ fetch('text.txt')
       chunks.push(currentChunk.trim());
     }
 
-    const order = getQueryParam('order', 1);
-    const content = chunks[(order - 1) % chunks.length];
+    order = parseInt(getQueryParam('order', 1));
+    const content = chunks[order - 1];
     contentElement.textContent = content;
   })
   .catch(error => {
