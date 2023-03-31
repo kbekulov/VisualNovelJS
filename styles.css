@@ -1,0 +1,43 @@
+body {
+  background-image: url('background.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+#container {
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  right: 15%;
+  bottom: 15%;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  overflow: hidden;
+}
+
+p {
+  color: white;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+  margin-top: 20px;
+  line-height: 1.5;
+}
+
+#message-box {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow-y: scroll;
+  padding: 15px;
+}
+
+a#review {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: white;
+  text-decoration: none;
+}
