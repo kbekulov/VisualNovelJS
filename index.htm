@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Novel</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Visual Novel Experience</title>
 </head>
 <body>
-    <div id="background-image"></div>
+  <div id="background">
     <div id="vignette"></div>
-    <div id="text-container"></div>
-    <a id="review-link" href="#">Review previous paragraphs</a>
-    <div id="review-box"></div>
-
-    <script src="app.js"></script>
+    <div id="container"></div>
+    <a id="history-link">View History</a>
+    <div id="history-modal">
+      <div id="history-content"></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>

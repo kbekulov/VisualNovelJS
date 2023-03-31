@@ -1,68 +1,83 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  const response = await fetch("text.txt");
-  const text = await response.text();
-  const paragraphs = text.split("\n\n").filter(p => p.trim() !== "");
-  let container = document.getElementById("text-container");
+const container = document.getElementById('container');
+const historyModal = document.getElementById('history-modal');
+const historyContent = document.getElementById('history-content');
+const historyLink = document.getElementById('history-link');
 
-  document.getElementById("background-image").style.opacity = "1";
+let textArray = [];
+let pageIndex = 0;
+let sentenceIndex = 0;
+let timeout;
 
-  const typeWriter = async (text, index = 0) => {
-      if (index < text.length) {
-          container.innerHTML += text.charAt(index);
-          setTimeout(() => typeWriter(text, index + 1), 50);
+historyLink.addEventListener('click', () => {
+  historyModal.style.display = 'block';
+  container.style.display = 'none';
+});
+
+historyModal.addEventListener('click', () => {
+  historyModal.style.display = 'none';
+  container.style.display = 'block';
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    processInput();
+  }
+});
+
+document.addEventListener('click', processInput);
+
+function processInput() {
+  clearTimeout(timeout);
+  if (sentenceIndex < textArray[pageIndex].length) {
+    typeSentence(textArray[pageIndex][sentenceIndex]);
+  } else if (pageIndex < textArray.length - 1) {
+    pageIndex++;
+    updateContainer();
+  }
+}
+
+async function fetchText() {
+  try {
+    const response = await fetch('text.txt');
+    const text = await response.text();
+    const paragraphs = text.split('\n\n');
+    textArray = paragraphs.map(paragraph => paragraph.split('. '));
+    updateContainer();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function updateContainer() {
+  container.innerHTML = '';
+  sentenceIndex = 0;
+  typeSentence(textArray[pageIndex][sentenceIndex]);
+}
+
+function typeSentence(sentence) {
+  let index = 0;
+  const p = document.createElement('p');
+  container.appendChild(p);
+
+  function type() {
+    if (index < sentence.length) {
+      p.innerHTML += sentence[index++];
+      timeout = setTimeout(type, 50);
+    } else {
+      sentenceIndex++;
+      if (sentenceIndex < textArray[pageIndex].length) {
+        const nextP = document.createElement('p');
+        container.appendChild(nextP);
+        p.style.opacity = 0.5;
+        historyContent.innerHTML += `<p>${sentence}.</p>`;
+        typeSentence(textArray[pageIndex][sentenceIndex]);
+      } else {
+        historyContent.innerHTML += `<p>${sentence}.</p>`;
       }
-  };
-
-  const displayParagraph = async (paragraph, index = 0) => {
-      if (index < paragraphs.length) {
-          const p = document.createElement("p");
-          container.appendChild(p);
-          container = p;
-
-          const clickOrSpace = async () => {
-            return new Promise(resolve => {
-                const listener = event => {
-                    if (event.type === "click" || event.key === " ") {
-                        document.removeEventListener("click", listener);
-                        document.removeEventListener("keydown", listener);
-                        resolve();
-                    }
-                };
-                document.addEventListener("click", listener);
-                document.addEventListener("keydown", listener);
-            });
-        };
-
-        await typeWriter(paragraph);
-
-        while (container.innerHTML !== paragraph) {
-            await clickOrSpace();
-            container.innerHTML = paragraph;
-        }
-
-        container.style.opacity = "0.5";
-        displayParagraph(paragraphs[index + 1], index + 1);
     }
-};
+  }
+  type();
+}
 
-displayParagraph(paragraphs[0]);
-
-const reviewLink = document.getElementById("review-link");
-const reviewBox = document.getElementById("review-box");
-
-reviewLink.addEventListener("click", event => {
-    event.preventDefault();
-    reviewBox.innerHTML = "";
-    paragraphs.forEach(paragraph => {
-        const p = document.createElement("p");
-        p.innerHTML = paragraph;
-        reviewBox.appendChild(p);
-    });
-    reviewBox.style.display = "block";
-});
-
-reviewBox.addEventListener("click", () => {
-    reviewBox.style.display = "none";
-});
-});
-
+fetchText();
