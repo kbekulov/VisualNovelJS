@@ -19,7 +19,6 @@ fadeIn(background, 2000);
 
 // start typewriter here!
 const container = document.querySelector(".container");
-const flippingPage = document.getElementById("flipping-page");
 
 const text = `Elegant facades adorned with intricate carvings, worn cobblestone streets, and ornate fountains coexisted with occasional glass-and-steel office skyscrapers that seemed to intrude upon the scene, like unwelcome guests at a sophisticated soiree.
 The sunlight danced on the river's surface, causing the water to shimmer and sparkle like a thousand tiny diamonds.
@@ -79,7 +78,6 @@ function typeText() {
       }
     } else {
       clearInterval(typeInterval);
-      flippingPage.style.display = "block";
       index = 0;
     }
   }, 50);
@@ -91,7 +89,6 @@ function nextParagraph() {
   if (typingInProgress) {
     textElement.textContent = paragraphs[currentParagraph];
     index = paragraphs[currentParagraph].length;
-    flippingPage.style.display = "block"; // Add this line
     typingInProgress = false; // Add this line
     return;
   }
