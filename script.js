@@ -21,13 +21,14 @@ fadeIn(background, 2000);
 const container = document.querySelector(".container");
 const flippingPage = document.getElementById("flipping-page");
 
-const text = `This is the first paragraph.
-It will be typed out one character at a time.
+const text = `Elegant facades adorned with intricate carvings, worn cobblestone streets, and ornate fountains coexisted with occasional glass-and-steel office skyscrapers that seemed to intrude upon the scene, like unwelcome guests at a sophisticated soiree.
+The sunlight danced on the river's surface, causing the water to shimmer and sparkle like a thousand tiny diamonds.
 
-When you click or press the spacebar, the next paragraph will begin.
+The beauty of these late summer weeks was ephemeral, however, as autumn was eager to step early into the scene, heralding the arrival of rains and melancholic landscapes.
 
-If the text doesn't fit into the container, the previous paragraphs will be deleted, and typing will proceed from a clean container.
-`;
+Lynleit sat in the riverside cafe, sipping her iced coffee and listening to the sounds of the city. She watched as people passed by, their faces tired and drawn from work and the suffocating heat. The sky was clear but a dark blanket of rainclouds was slowly approaching in the distance. A storm loomed on the horizon, casting an eerie pallor over the city, and she could feel the weight of the impending rain pressing down on her. The air was thick with the smell of damp earth and the faint odour of cigarette smoke wafting in from a nearby table. As she gazed out at the river, she couldn't help but feel a sense of dread about the future. She knew that a rain was coming, and with it, the unsettling unknown.
+
+She reached up to adjust a tiny device in her ear, listening intently, with her eyes lost in the distance. Occasionally, she hummed in response to the person on the other end of the call.`;
 
 const paragraphs = text.split("\n");
 
