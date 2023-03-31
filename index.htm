@@ -13,16 +13,28 @@
   </div>
   <script>
     let orderNumber = 0;
+    const contentElement = document.getElementById('content');
 
-    function incrementOrderNumber() {
-      orderNumber++;
-      updateDisplayedText();
+    function updateContent() {
+      if (orderNumber < textChunks.length) {
+        contentElement.innerHTML = '';
+        const pElement = document.createElement('p');
+        pElement.textContent = textChunks[orderNumber];
+        contentElement.appendChild(pElement);
+      } else {
+        console.error('Order number is out of range');
+      }
     }
 
-    document.addEventListener('click', incrementOrderNumber);
-    document.addEventListener('keypress', event => {
+    document.body.addEventListener('click', () => {
+      orderNumber++;
+      updateContent();
+    });
+
+    document.body.addEventListener('keyup', (event) => {
       if (event.code === 'Space') {
-        incrementOrderNumber();
+        orderNumber++;
+        updateContent();
       }
     });
   </script>
