@@ -43,7 +43,7 @@ async function init() {
     paragraphs.forEach((paragraph, index) => {
       if (index < currentParagraph) {
         paragraph.style.opacity = "0.5";
-      } else {
+      } else if (index === currentParagraph) {
         paragraph.style.opacity = "1";
       }
     });
