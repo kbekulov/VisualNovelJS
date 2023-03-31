@@ -39,7 +39,7 @@ async function init() {
     const splittedTextArray = splitText(text, 200);
 
     // Example: display the array item of your choice
-    const arrayIndex = 0; // Change this to the desired index
+    const arrayIndex = 1; // Change this to the desired index
     const outputElement = document.getElementById('output');
     outputElement.textContent = splittedTextArray[arrayIndex];
   } catch (error) {
