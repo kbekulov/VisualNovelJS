@@ -17,7 +17,7 @@ function fadeIn(element, duration) {
 
 fadeIn(background, 2000);
 
-// start typewriter here
+// start typewriter here 
 const container = document.querySelector(".container");
 const flippingPage = document.getElementById("flipping-page");
 
