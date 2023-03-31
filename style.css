@@ -2,7 +2,7 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-image: url('background.jpg');
+  background-image: url('your-image-url.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -23,8 +23,11 @@ body, html {
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
-  max-width: 80%;
+  width: 70%;
+  min-width: 640px;
+  min-height: 480px;
   background-color: rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
 }
 
 p {
