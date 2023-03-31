@@ -26,7 +26,8 @@ body, html {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 24px;
   box-sizing: border-box;
-  font-size: 24px;
+  font-size: 18px; /* Change this value to adjust the font size */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add this line to add a shadow */
   color: white;
 }
 
