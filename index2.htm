@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Novel</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 2s;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+  .vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1) 100%);
+    z-index: 0;
+  }
+  #container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    height: 70%;
+    margin: 15%;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    overflow: hidden;
+  }
+  p {
+    margin: 0;
+    padding: 0;
+  }
+  #prev-texts {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 200px;
+    height: 300px;
+    overflow-y: scroll;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="background"></div>
+<div class="vignette"></div>
+<div id="container"></div>
+<div id="prev-texts"></div>
+<script>
+  // The path of the txt file containing the text
+  const textFile = 'text.txt';
+
+  // Fetch the txt file and process it
+  fetch(textFile)
+    .then(response => response.text())
+    .then(text => {
+      const paragraphs = text.split('\n\n').filter(p => p.trim() !== '');
+      let currentParagraph = 0;
+
+      const container = document.getElementById('container');
+      const prevTexts = document.getElementById('prev-texts');
+      const background = document.querySelector('.background');
+
+      background.addEventListener('transitionend', () => {
+        if (background.style.opacity === '0') {
+          background.style.opacity = '1';
+        }
+      });
+
+      setTimeout(() => {
+        background.style.opacity = '1';
+      }, 100);
+
+      const typeWriter = (text, container, onComplete) => {
+        let i = 0;
+        const interval = setInterval(() => {
+          container.innerHTML += text.charAt(i);
+          i++;
+          if (i > text.length) {
+            clearInterval(interval);
+            onComplete();
+          }
+        }, 50);
+      };
+
+      const displayNextParagraph = () => {
+        if (currentParagraph >= paragraphs.length) return;
+
+        const p = document.createElement('p');
+        container.appendChild(p);
+
+typeWriter(paragraphs[currentParagraph], p, () => {
+  currentParagraph++;
+
+  if (currentParagraph < paragraphs.length) {
+    container.style.pointerEvents = 'auto';
+  }
+});
+
+const pCopy = p.cloneNode(true);
+prevTexts.appendChild(pCopy);
+
+p.style.opacity = '1';
+p.style.transition = 'opacity 1s';
+
+if (currentParagraph > 0) {
+  const prevP = container.children[currentParagraph - 1];
+  prevP.style.opacity = '0.5';
+}
+};
+
+container.addEventListener('click', () => {
+if (container.style.pointerEvents === 'auto') {
+  container.style.pointerEvents = 'none';
+  displayNextParagraph();
+}
+});
+
+document.addEventListener('keydown', (event) => {
+if (event.code === 'Space' && container.style.pointerEvents === 'auto') {
+  event.preventDefault();
+  container.style.pointerEvents = 'none';
+  displayNextParagraph();
+}
+});
+
+prevTexts.addEventListener('click', () => {
+event.stopPropagation();
+});
+
+prevTexts.addEventListener('dblclick', () => {
+prevTexts.style.display = prevTexts.style.display === 'none' ? 'block' : 'none';
+});
+
+container.style.pointerEvents = 'none';
+displayNextParagraph();
+});
+
+</script>
+</body>
+</html>
+
