@@ -38,16 +38,26 @@ async function init() {
   let index = 0;
   let textElement;
 
+  let clearingInProgress = false;
+
+  function clearPreviousParagraphs() {
+    clearingInProgress = true;
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+    clearingInProgress = false;
+  }
+
   function fadeOutPreviousParagraphs() {
     const paragraphs = container.querySelectorAll("p");
     paragraphs.forEach((paragraph, index) => {
-      if (index < currentParagraph) {
+      if (index < currentParagraph && !clearingInProgress) {
         paragraph.style.opacity = "0.5";
-      } else if (index === currentParagraph) {
+      } else {
         paragraph.style.opacity = "1";
       }
     });
-  }  
+  }
 
   function clearPreviousParagraphs() {
     while (container.firstChild) {
