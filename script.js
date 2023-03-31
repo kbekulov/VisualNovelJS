@@ -36,17 +36,6 @@ async function init() {
   let index = 0;
   let textElement;
 
-  function fadeOutPreviousParagraphs() {
-    const paragraphs = container.querySelectorAll("p");
-    paragraphs.forEach((paragraph, index) => {
-      if (index === currentParagraph - 1) {
-        paragraph.style.opacity = "0.5";
-      } else {
-        paragraph.style.opacity = "1";
-      }
-    });
-  }
-
   function clearPreviousParagraphs() {
     while (container.firstChild) {
       container.removeChild(container.firstChild);
@@ -62,7 +51,6 @@ async function init() {
     }
     if (currentParagraph < paragraphs.length - 1) {
       currentParagraph++;
-      fadeOutPreviousParagraphs();
       typeText();
     }
   }
@@ -76,9 +64,11 @@ async function init() {
   let typingInProgress = false;
 
   function typeText() {
+    // Fade out the previous paragraph, if any
     if (currentParagraph > 0) {
-      fadeOutPreviousParagraphs();
+      container.children[currentParagraph - 1].style.opacity = "0.5";
     }
+
     textElement = createParagraph();
     typingInProgress = true;
     const typeInterval = setInterval(() => {
@@ -112,3 +102,4 @@ async function init() {
 }
 
 init();
+
