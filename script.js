@@ -39,7 +39,7 @@ async function init() {
   function fadeOutPreviousParagraphs() {
     const paragraphs = container.querySelectorAll("p");
     paragraphs.forEach((paragraph, index) => {
-      if (index < currentParagraph - 1) {
+      if (index === currentParagraph - 1) {
         paragraph.style.opacity = "0.5";
       } else {
         paragraph.style.opacity = "1";
@@ -76,6 +76,9 @@ async function init() {
   let typingInProgress = false;
 
   function typeText() {
+    if (currentParagraph > 0) {
+      fadeOutPreviousParagraphs();
+    }
     textElement = createParagraph();
     typingInProgress = true;
     const typeInterval = setInterval(() => {
