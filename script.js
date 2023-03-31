@@ -1,3 +1,22 @@
+const background = document.querySelector(".background");
+
+function fadeIn(element, duration) {
+  let opacity = 0;
+  const interval = 10;
+  const step = interval / (duration / 1000);
+
+  const fadeInInterval = setInterval(() => {
+    opacity += step;
+    if (opacity >= 1) {
+      clearInterval(fadeInInterval);
+      opacity = 1;
+    }
+    element.style.opacity = opacity;
+  }, interval);
+}
+
+fadeIn(background, 2000);
+
 const container = document.querySelector(".container");
 const flippingPage = document.getElementById("flipping-page");
 
