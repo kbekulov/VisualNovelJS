@@ -57,9 +57,12 @@ function createParagraph() {
   return paragraph;
 }
 
+let typingInProgress = false;
+
 function typeText() {
   textElement = createParagraph();
   fadeOutPreviousParagraphs();
+  typingInProgress = true;
   const typeInterval = setInterval(() => {
     if (index < paragraphs[currentParagraph].length) {
       const char = paragraphs[currentParagraph].charAt(index);
@@ -83,6 +86,11 @@ function typeText() {
 typeText();
 
 function nextParagraph() {
+  if (typingInProgress) { // Add this condition
+    textElement.textContent = paragraphs[currentParagraph];
+    index = paragraphs[currentParagraph].length;
+    return;
+  }
   if (currentParagraph < paragraphs.length - 1) {
     currentParagraph++;
     flippingPage.style.display = "none";
