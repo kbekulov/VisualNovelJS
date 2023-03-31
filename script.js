@@ -78,6 +78,15 @@ async function init() {
     if (typingInProgress) return;
 
     if (currentParagraph < paragraphs.length - 1) {
+      const testParagraph = createParagraph();
+      testParagraph.textContent = paragraphs[currentParagraph + 1];
+
+      if (testParagraph.scrollHeight + container.scrollHeight > container.clientHeight) {
+        clearPreviousParagraphs();
+      } else {
+        container.removeChild(testParagraph);
+      }
+
       currentParagraph++;
       fadeOutPreviousParagraphs();
       typeText();
