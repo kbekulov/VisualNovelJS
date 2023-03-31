@@ -1,88 +1,68 @@
-const container = document.getElementById("container");
-const messageBox = document.getElementById("message-box");
-const reviewLink = document.getElementById("review");
+document.addEventListener("DOMContentLoaded", async () => {
+  const response = await fetch("text.txt");
+  const text = await response.text();
+  const paragraphs = text.split("\n\n").filter(p => p.trim() !== "");
+  let container = document.getElementById("text-container");
 
-async function fetchText() {
-    const response = await fetch("text.txt");
-    const text = await response.text();
-    return text;
-}
+  document.getElementById("background-image").style.opacity = "1";
 
-function parseParagraphs(text) {
-    return text.split("\n\n").filter(p => p.trim() !== "");
-}
+  const typeWriter = async (text, index = 0) => {
+      if (index < text.length) {
+          container.innerHTML += text.charAt(index);
+          setTimeout(() => typeWriter(text, index + 1), 50);
+      }
+  };
 
-function typeText(element, text, index = 0) {
-    return new Promise(resolve => {
-        if (index < text.length) {
-            element.textContent += text[index];
-            setTimeout(() => {
-                typeText(element, text, index + 1).then(resolve);
-            }, 75);
-        } else {
-            resolve();
-        }
-    });
-}
+  const displayParagraph = async (paragraph, index = 0) => {
+      if (index < paragraphs.length) {
+          const p = document.createElement("p");
+          container.appendChild(p);
+          container = p;
 
-async function displayParagraphs(paragraphs) {
-    for (const paragraph of paragraphs) {
-        const p = document.createElement("p");
-        container.appendChild(p);
-        await typeText(p, paragraph);
-        p.style.opacity = 0.5;
-
-        const onClickOrSpace = e => {
-            if (!e || e.type === "click" || (e.type === "keydown" && e.code === "Space")) {
-                document.removeEventListener("click", onClickOrSpace);
-                document.removeEventListener("keydown", onClickOrSpace);
-                displayParagraphs(paragraphs.slice(1));
-            }
+          const clickOrSpace = async () => {
+            return new Promise(resolve => {
+                const listener = event => {
+                    if (event.type === "click" || event.key === " ") {
+                        document.removeEventListener("click", listener);
+                        document.removeEventListener("keydown", listener);
+                        resolve();
+                    }
+                };
+                document.addEventListener("click", listener);
+                document.addEventListener("keydown", listener);
+            });
         };
 
-        document.addEventListener("click", onClickOrSpace);
-        document.addEventListener("keydown", onClickOrSpace);
-        break;
+        await typeWriter(paragraph);
+
+        while (container.innerHTML !== paragraph) {
+            await clickOrSpace();
+            container.innerHTML = paragraph;
+        }
+
+        container.style.opacity = "0.5";
+        displayParagraph(paragraphs[index + 1], index + 1);
     }
-}
+};
 
-fetchText()
-    .then(parseParagraphs)
-    .then(displayParagraphs);
+displayParagraph(paragraphs[0]);
 
-    reviewLink.addEventListener("click", e => {
-      e.preventDefault();
-      messageBox.style.display = "block";
-      messageBox.innerHTML = "";
-      for (const p of container.querySelectorAll("p")) {
-          const newP = document.createElement("p");
-          newP.textContent = p.textContent;
-          newP.style.opacity = 1;
-          messageBox.appendChild(newP);
-      }
-  });
-  
-  messageBox.addEventListener("click", () => {
-      messageBox.style.display = "none";
-  });
-  
-  // Background image fade-in effect
-  document.body.style.transition = "opacity 3s";
-  document.body.style.opacity = 0;
-  window.addEventListener("load", () => {
-      setTimeout(() => {
-          document.body.style.opacity = 1;
-      }, 100);
-  });
-  
-  // Black vignette on top of the background image
-  const vignette = document.createElement("div");
-  vignette.style.position = "fixed";
-  vignette.style.top = "0";
-  vignette.style.left = "0";
-  vignette.style.right = "0";
-  vignette.style.bottom = "0";
-  vignette.style.backgroundImage =
-      "radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)";
-  document.body.appendChild(vignette);
-  
+const reviewLink = document.getElementById("review-link");
+const reviewBox = document.getElementById("review-box");
+
+reviewLink.addEventListener("click", event => {
+    event.preventDefault();
+    reviewBox.innerHTML = "";
+    paragraphs.forEach(paragraph => {
+        const p = document.createElement("p");
+        p.innerHTML = paragraph;
+        reviewBox.appendChild(p);
+    });
+    reviewBox.style.display = "block";
+});
+
+reviewBox.addEventListener("click", () => {
+    reviewBox.style.display = "none";
+});
+});
+

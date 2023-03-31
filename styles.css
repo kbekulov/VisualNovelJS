@@ -1,43 +1,70 @@
-body {
-  background-image: url('background.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
-#container {
+#background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('background.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+#vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 70%, rgba(0,0,0,1) 100%);
+}
+
+#text-container {
   position: absolute;
   top: 15%;
   left: 15%;
   right: 15%;
   bottom: 15%;
-  background-color: rgba(0, 0, 0, 0.5);
   padding: 15px;
+  background-color: rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
 
 p {
-  color: white;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-  margin-top: 20px;
+  margin: 0 0 20px;
   line-height: 1.5;
+  color: white;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 1s;
 }
 
-#message-box {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  overflow-y: scroll;
-  padding: 15px;
-}
-
-a#review {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+#review-link {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
   color: white;
   text-decoration: none;
+  cursor: pointer;
+}
+
+#review-box {
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow-y: scroll;
+  display: none;
 }
