@@ -60,11 +60,33 @@ async function init() {
   }
 
   function clearPreviousParagraphs() {
+    clearingInProgress = true;
     while (container.firstChild) {
       container.removeChild(container.firstChild);
     }
+    clearingInProgress = false;
   }
-
+  
+  function nextParagraph() {
+    if (typingInProgress) {
+      textElement.textContent = paragraphs[currentParagraph];
+      index = paragraphs[currentParagraph].length;
+      typingInProgress = false;
+      return;
+    }
+    if (currentParagraph < paragraphs.length - 1) {
+      currentParagraph++;
+      if (container.scrollHeight > container.clientHeight) {
+        clearPreviousParagraphs();
+        currentParagraph = 0;
+      } else {
+        fadeOutPreviousParagraphs();
+      }
+      textElement.style.opacity = "1";
+      typeText();
+    }
+  }
+  
   function createParagraph() {
     const paragraph = document.createElement("p");
     container.appendChild(paragraph);
