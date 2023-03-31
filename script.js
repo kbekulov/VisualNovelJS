@@ -61,14 +61,20 @@ async function init() {
     return paragraph;
   }
 
+  async function fadeOutPreviousParagraph() {
+    if (currentParagraph > 0) {
+      const prevParagraph = container.children[currentParagraph - 1];
+      prevParagraph.style.transition = 'opacity 0.5s';
+      prevParagraph.style.opacity = "0.5";
+      await new Promise(resolve => setTimeout(resolve, 500)); // wait for 500ms
+    }
+  }
+
   let typingInProgress = false;
 
-  function typeText() {
-    // Fade out the previous paragraph, if any
-    if (currentParagraph > 0) {
-      container.children[currentParagraph - 1].style.opacity = "0.5";
-    }
-
+  async function typeText() {
+    await fadeOutPreviousParagraph();
+    
     textElement = createParagraph();
     typingInProgress = true;
     const typeInterval = setInterval(() => {
@@ -102,4 +108,3 @@ async function init() {
 }
 
 init();
-
