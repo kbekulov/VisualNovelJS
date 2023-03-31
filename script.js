@@ -17,17 +17,29 @@ function fadeIn(element, duration) {
 
 fadeIn(background, 2000);
 
+// start typewriter here
 const container = document.querySelector(".container");
 const flippingPage = document.getElementById("flipping-page");
 
-const text = `This is a sample text.
-It will be typed out letter by letter.
-Press the spacebar or click anywhere on the screen to continue typing the text.`;
+const text = `This is the first paragraph.
+It will be typed out one character at a time.
 
-const paragraphs = text.split('\n');
+When you click or press the spacebar, the next paragraph will begin.
+
+If the text doesn't fit into the container, the previous paragraphs will be deleted, and typing will proceed from a clean container.
+`;
+
+const paragraphs = text.split("\n");
+
 let currentParagraph = 0;
 let index = 0;
-let typingInProgress = false;
+let textElement;
+
+function clearPreviousParagraphs() {
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+}
 
 function createParagraph() {
   const paragraph = document.createElement("p");
@@ -35,57 +47,43 @@ function createParagraph() {
   return paragraph;
 }
 
-let textElement = createParagraph();
-
 function typeText() {
-  if (!typingInProgress && currentParagraph < paragraphs.length) {
-    if (currentParagraph > 0) {
-      container.querySelectorAll("p")[currentParagraph - 1].style.opacity = "0.5";
-    }
+  textElement = createParagraph();
+  const typeInterval = setInterval(() => {
+    if (index < paragraphs[currentParagraph].length) {
+      const char = paragraphs[currentParagraph].charAt(index);
+      textElement.textContent += char;
+      index++;
 
-    typingInProgress = true;
-
-    const typeInterval = setInterval(() => {
-      if (index < paragraphs[currentParagraph].length) {
-        const char = paragraphs[currentParagraph].charAt(index);
-        textElement.textContent += char;
-        index++;
-      } else {
-        clearInterval(typeInterval);
-        typingInProgress = false;
-
-        if (currentParagraph < paragraphs.length - 1) {
-          index = 0;
-          currentParagraph++;
-          textElement = createParagraph();
-        } else {
-          flippingPage.style.display = "block";
-        }
+      // Check if the text overflows the container's boundaries
+      if (container.scrollHeight > container.clientHeight) {
+        clearPreviousParagraphs();
+        textElement = createParagraph();
+        textElement.textContent = char;
       }
-    }, 50);
-
-    return typeInterval;
-  }
-  return null;
+    } else {
+      clearInterval(typeInterval);
+      flippingPage.style.display = "block";
+      index = 0;
+    }
+  }, 50);
 }
 
-function handleUserInteraction() {
-  if (typingInProgress) {
-    clearInterval(typeText());
-    textElement.textContent = paragraphs[currentParagraph];
-    index = paragraphs[currentParagraph].length;
-  } else {
+typeText();
+
+function nextParagraph() {
+  if (currentParagraph < paragraphs.length - 1) {
+    currentParagraph++;
+    flippingPage.style.display = "none";
+    textElement.style.opacity = "1";
     typeText();
   }
 }
 
-document.body.addEventListener("click", handleUserInteraction);
-
-document.addEventListener("keydown", (event) => {
-  if (event.code === "Space") {
-    handleUserInteraction();
-    event.preventDefault(); // Prevent scrolling when spacebar is pressed
+document.addEventListener("click", nextParagraph);
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    e.preventDefault();
+    nextParagraph();
   }
 });
-
-typeText();
