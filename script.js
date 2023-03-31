@@ -17,6 +17,7 @@ function fadeIn(element, duration) {
 
 fadeIn(background, 2000);
 
+// Fetch text from txt file
 async function fetchText() {
   const response = await fetch("text.txt");
   const text = await response.text();
@@ -25,27 +26,15 @@ async function fetchText() {
 
 async function init() {
   const text = await fetchText();
-  const paragraphs = text.split("\n").filter((line) => line.trim() !== "");
+  const paragraphs = text
+    .split("\n")
+    .filter((line) => line.trim() !== "");
+
   const container = document.querySelector(".container");
 
   let currentParagraph = 0;
   let index = 0;
   let textElement;
-  let typingInProgress = false;
-  let typeInterval;
-
-  function createParagraph() {
-    const paragraph = document.createElement("p");
-    container.appendChild(paragraph);
-    return paragraph;
-  }
-
-  function fadeOutPreviousParagraphs() {
-    const paragraphs = container.querySelectorAll("p");
-    paragraphs.forEach((paragraph, index) => {
-      paragraph.style.opacity = index < currentParagraph ? "0.5" : "1";
-    });
-  }
 
   function clearPreviousParagraphs() {
     while (container.firstChild) {
@@ -53,55 +42,61 @@ async function init() {
     }
   }
 
-  function typeText() {
+  function nextParagraph() {
+    if (typingInProgress) {
+      textElement.textContent = paragraphs[currentParagraph];
+      index = paragraphs[currentParagraph].length;
+      typingInProgress = false;
+      return;
+    }
+    if (currentParagraph < paragraphs.length - 1) {
+      currentParagraph++;
+      typeText();
+    }
+  }
+
+  function createParagraph() {
+    const paragraph = document.createElement("p");
+    container.appendChild(paragraph);
+    return paragraph;
+  }
+
+  async function fadeOutPreviousParagraph() {
+    if (currentParagraph > 0) {
+      const prevParagraph = container.children[currentParagraph - 1];
+      prevParagraph.style.transition = 'opacity 0.5s';
+      prevParagraph.style.opacity = "0.5";
+      await new Promise(resolve => setTimeout(resolve, 500)); // wait for 500ms
+    }
+  }
+
+  let typingInProgress = false;
+
+  async function typeText() {
+    await fadeOutPreviousParagraph();
+    
     textElement = createParagraph();
     typingInProgress = true;
-
-    typeInterval = setInterval(() => {
+    const typeInterval = setInterval(() => {
       if (index < paragraphs[currentParagraph].length) {
-        textElement.textContent += paragraphs[currentParagraph].charAt(index);
+        const char = paragraphs[currentParagraph].charAt(index);
+        textElement.textContent += char;
         index++;
 
+        // Check if the text overflows the container's boundaries
         if (container.scrollHeight > container.clientHeight) {
           clearPreviousParagraphs();
           textElement = createParagraph();
-          textElement.textContent = paragraphs[currentParagraph].charAt(index - 1);
+          textElement.textContent = char;
         }
       } else {
         clearInterval(typeInterval);
-        typingInProgress = false;
         index = 0;
       }
     }, 50);
   }
 
-  function autoComplete() {
-    if (typingInProgress) {
-      clearInterval(typeInterval);
-      textElement.textContent = paragraphs[currentParagraph];
-      typingInProgress = false;
-      index = paragraphs[currentParagraph].length;
-    }
-  }
-
-  function nextParagraph() {
-    autoComplete();
-
-    if (currentParagraph < paragraphs.length - 1) {
-      const testParagraph = createParagraph();
-      testParagraph.textContent = paragraphs[currentParagraph + 1];
-
-      if (testParagraph.scrollHeight + container.scrollHeight > container.clientHeight) {
-        clearPreviousParagraphs();
-      } else {
-        container.removeChild(testParagraph);
-      }
-
-      currentParagraph++;
-      fadeOutPreviousParagraphs();
-      typeText();
-    }
-  }
+  typeText();
 
   document.addEventListener("click", nextParagraph);
   document.addEventListener("keydown", (e) => {
@@ -110,8 +105,6 @@ async function init() {
       nextParagraph();
     }
   });
-
-  typeText();
 }
 
 init();
