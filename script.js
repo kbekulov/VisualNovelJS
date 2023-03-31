@@ -86,9 +86,11 @@ function typeText() {
 typeText();
 
 function nextParagraph() {
-  if (typingInProgress) { // Add this condition
+  if (typingInProgress) {
     textElement.textContent = paragraphs[currentParagraph];
     index = paragraphs[currentParagraph].length;
+    flippingPage.style.display = "block"; // Add this line
+    typingInProgress = false; // Add this line
     return;
   }
   if (currentParagraph < paragraphs.length - 1) {
