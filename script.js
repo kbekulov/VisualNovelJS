@@ -20,14 +20,12 @@ fadeIn(background, 2000);
 // start typewriter here!
 const container = document.querySelector(".container");
 
-const text = `Elegant facades adorned with intricate carvings, worn cobblestone streets, and ornate fountains coexisted with occasional glass-and-steel office skyscrapers that seemed to intrude upon the scene, like unwelcome guests at a sophisticated soiree.
-The sunlight danced on the river's surface, causing the water to shimmer and sparkle like a thousand tiny diamonds.
+const text = `Meanwhile, Felix strode into the bustling café, inhaling deeply and savouring the rich aroma of freshly brewed coffee beans. He took his time scanning the busy establishment, looking for any signs of suspicious activity. His excessive caution was not instinctive, but merely a formality imposed on him by his work. In the corner of his eye, he noticed a young female barista working behind the counter. He proceeded to sauntered up to the counter. With a playful smile on his face he ordered his coffee. Awaiting his spicy iced latte, he stole glances at his phone, keeping an eye on the screen. His attention was soon diverted, however, as the female barista smiled at him and asked if there was anything else she could get for him.
 
-The beauty of these late summer weeks was ephemeral, however, as autumn was eager to step early into the scene, heralding the arrival of rains and melancholic landscapes.
+"Oh, just your number," Felix quipped, flashing his most charming smile.
+The barista chuckled, but shook her head. "Sorry, I'm taken."
 
-Lynleit sat in the riverside cafe, sipping her iced coffee and listening to the sounds of the city. She watched as people passed by, their faces tired and drawn from work and the suffocating heat. The sky was clear but a dark blanket of rainclouds was slowly approaching in the distance. A storm loomed on the horizon, casting an eerie pallor over the city, and she could feel the weight of the impending rain pressing down on her. The air was thick with the smell of damp earth and the faint odour of cigarette smoke wafting in from a nearby table. As she gazed out at the river, she couldn't help but feel a sense of dread about the future. She knew that a rain was coming, and with it, the unsettling unknown.
-
-She reached up to adjust a tiny device in her ear, listening intently, with her eyes lost in the distance. Occasionally, she hummed in response to the person on the other end of the call.`;
+Lynleit curiously observed Felix from a distance, as he was making a fool of himself at the counter. She couldn't believe how little regard he had for the seriousness of his job.`;
 
 const paragraphs = text
   .split("\n")
@@ -89,12 +87,11 @@ function nextParagraph() {
   if (typingInProgress) {
     textElement.textContent = paragraphs[currentParagraph];
     index = paragraphs[currentParagraph].length;
-    typingInProgress = false; // Add this line
+    typingInProgress = false;
     return;
   }
   if (currentParagraph < paragraphs.length - 1) {
     currentParagraph++;
-    flippingPage.style.display = "none";
     textElement.style.opacity = "1";
     typeText();
   }
