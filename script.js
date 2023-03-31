@@ -43,9 +43,11 @@ async function init() {
     paragraphs.forEach((paragraph, index) => {
       if (index < currentParagraph) {
         paragraph.style.opacity = "0.5";
+      } else {
+        paragraph.style.opacity = "1";
       }
     });
-  }
+  }  
 
   function clearPreviousParagraphs() {
     while (container.firstChild) {
