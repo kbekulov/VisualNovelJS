@@ -12,7 +12,19 @@
     <div id="content"></div>
   </div>
   <script>
-    const orderNumber = 1; // Change this number to display a different string from the array
+    let orderNumber = 0;
+
+    function incrementOrderNumber() {
+      orderNumber++;
+      updateDisplayedText();
+    }
+
+    document.addEventListener('click', incrementOrderNumber);
+    document.addEventListener('keypress', event => {
+      if (event.code === 'Space') {
+        incrementOrderNumber();
+      }
+    });
   </script>
   <script src="script.js"></script>
 </body>

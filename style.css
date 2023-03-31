@@ -7,6 +7,10 @@ body, html {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .vignette {
