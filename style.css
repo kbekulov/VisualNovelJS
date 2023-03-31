@@ -44,6 +44,7 @@ body::before {
 
 p {
   margin: 0 0 20px 0;
+  line-height: 1.5; /* Add this line to adjust the line spacing */
 }
 
 #flipping-page {
