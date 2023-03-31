@@ -36,6 +36,15 @@ let currentParagraph = 0;
 let index = 0;
 let textElement;
 
+function fadeOutPreviousParagraphs() {
+  const paragraphs = container.querySelectorAll("p");
+  paragraphs.forEach((paragraph, index) => {
+    if (index < currentParagraph) {
+      paragraph.style.opacity = "0.5";
+    }
+  });
+}
+
 function clearPreviousParagraphs() {
   while (container.firstChild) {
     container.removeChild(container.firstChild);
@@ -50,6 +59,7 @@ function createParagraph() {
 
 function typeText() {
   textElement = createParagraph();
+  fadeOutPreviousParagraphs();
   const typeInterval = setInterval(() => {
     if (index < paragraphs[currentParagraph].length) {
       const char = paragraphs[currentParagraph].charAt(index);
