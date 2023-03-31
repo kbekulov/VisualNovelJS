@@ -30,8 +30,6 @@ async function init() {
     .split("\n")
     .filter((line) => line.trim() !== "");
 
-  // Rest of the code from the previous script.js
-
   const container = document.querySelector(".container");
 
   let currentParagraph = 0;
@@ -41,20 +39,20 @@ async function init() {
   function fadeOutPreviousParagraphs() {
     const paragraphs = container.querySelectorAll("p");
     paragraphs.forEach((paragraph, index) => {
-      if (index < currentParagraph - 1) { // Only fade out paragraphs before the current one
+      if (index < currentParagraph - 1) {
         paragraph.style.opacity = "0.5";
       } else {
         paragraph.style.opacity = "1";
       }
     });
   }
-  
+
   function clearPreviousParagraphs() {
     while (container.firstChild) {
       container.removeChild(container.firstChild);
     }
-  }  
-  
+  }
+
   function nextParagraph() {
     if (typingInProgress) {
       textElement.textContent = paragraphs[currentParagraph];
@@ -64,17 +62,11 @@ async function init() {
     }
     if (currentParagraph < paragraphs.length - 1) {
       currentParagraph++;
-      if (container.scrollHeight > container.clientHeight) {
-        clearPreviousParagraphs();
-        currentParagraph = 0;
-      } else {
-        fadeOutPreviousParagraphs();
-      }
-      textElement.style.opacity = "1";
+      fadeOutPreviousParagraphs();
       typeText();
     }
   }
-  
+
   function createParagraph() {
     const paragraph = document.createElement("p");
     container.appendChild(paragraph);
@@ -85,7 +77,6 @@ async function init() {
 
   function typeText() {
     textElement = createParagraph();
-    fadeOutPreviousParagraphs();
     typingInProgress = true;
     const typeInterval = setInterval(() => {
       if (index < paragraphs[currentParagraph].length) {
@@ -107,20 +98,6 @@ async function init() {
   }
 
   typeText();
-
-  function nextParagraph() {
-    if (typingInProgress) {
-      textElement.textContent = paragraphs[currentParagraph];
-      index = paragraphs[currentParagraph].length;
-      typingInProgress = false;
-      return;
-    }
-    if (currentParagraph < paragraphs.length - 1) {
-      currentParagraph++;
-      textElement.style.opacity = "1";
-      typeText();
-    }
-  }
 
   document.addEventListener("click", nextParagraph);
   document.addEventListener("keydown", (e) => {
