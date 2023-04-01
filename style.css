@@ -23,7 +23,6 @@ body, html {
 }
 
 .container {
-  overflow: auto;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -31,7 +30,7 @@ body, html {
   padding: 20px;
   width: 70%;
   min-width: 640px;
-  min-height: 480px;
+  height: 480px; /* Set the height to the desired value */
   background-color: rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
   box-shadow:
@@ -39,6 +38,7 @@ body, html {
     0 0 0 4px rgba(0, 0, 0, 0.2),
     0 0 0 6px rgba(0, 0, 0, 0.3),
     0 0 0 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden; /* Add this to hide overflowing content */
 }
 
 p {
