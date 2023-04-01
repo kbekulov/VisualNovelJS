@@ -1,6 +1,6 @@
 // Constants
-const TYPEWRITER_DELAY_MS = 25;
-const TYPEWRITER_FAST_DELAY_MS = 2;
+const TYPEWRITER_DELAY_MS = 20;
+const TYPEWRITER_FAST_DELAY_MS = 1;
 
 // Helper function to fetch and parse text
 async function getText(url) {
@@ -96,8 +96,16 @@ async function initializePage() {
 
 // Helper function to check if an element is overflowing
 function isOverflowing(element) {
-  return element.scrollHeight > element.clientHeight;
+  const containerStyle = window.getComputedStyle(element);
+  const containerPaddingTop = parseFloat(containerStyle.paddingTop);
+  const containerPaddingBottom = parseFloat(containerStyle.paddingBottom);
+  const containerHeight = element.clientHeight - containerPaddingTop - containerPaddingBottom;
+
+  const paragraphsHeight = Array.from(element.children).reduce((sum, child) => sum + child.offsetHeight, 0);
+
+  return paragraphsHeight > containerHeight;
 }
+
 
 // Start the script when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializePage);
