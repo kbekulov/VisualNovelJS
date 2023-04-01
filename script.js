@@ -59,6 +59,10 @@ function updateContent(order) {
         currentText += chunks[currentChunkIndex][currentIndex];
         currentIndex++;
 
+        if (chunks[currentChunkIndex][currentIndex] === '.' || chunks[currentChunkIndex][currentIndex] === '?' || chunks[currentChunkIndex][currentIndex] === '!') {
+          isSentenceEnd = true;
+        }
+
         contentElement.innerHTML = currentText.replace(/\n/g, '<br>');
       }, TYPEWRITER_DELAY_MS);
 
