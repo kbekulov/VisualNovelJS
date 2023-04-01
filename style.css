@@ -83,3 +83,11 @@ p {
     filter: blur(2px);
   }
 }
+
+.icon {
+  display: inline;
+  height: 1em;
+  width: auto;
+  vertical-align: middle;
+  margin-left: 0.3em;
+}

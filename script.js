@@ -34,6 +34,12 @@ async function typeSentence(element, sentence, delay, fastDelay) {
     await sleep(isFast ? fastDelay : delay);
   }
 
+  // Append the icon at the end of the sentence
+  const icon = document.createElement("img");
+  icon.src = "icon_url_here"; // Replace with the actual URL of your icon
+  icon.classList.add("icon");
+  element.appendChild(icon);
+
   document.removeEventListener('click', handleClick);
   document.removeEventListener('keydown', handleKeyDown);
 
