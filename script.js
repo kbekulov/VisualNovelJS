@@ -66,7 +66,10 @@ async function initializePage() {
     await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS);
 
     // Check if the container is overflowing
-    if (container.scrollHeight > container.clientHeight) {
+    const containerComputedStyle = window.getComputedStyle(container);
+    const containerHeight = parseFloat(containerComputedStyle.height);
+
+    if (paragraph.offsetTop + paragraph.offsetHeight > containerHeight) {
       container.innerHTML = ''; // Clear the container
       container.appendChild(paragraph); // Add the current paragraph
     }
