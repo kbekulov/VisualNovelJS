@@ -12,13 +12,6 @@ async function getText(url) {
 
 // Typewriter effect
 async function typeSentence(element, sentence, delay, fastDelay) {
-
-  // Append the icon at the end of the sentence
-  const icon = document.createElement("img");
-  icon.src = "icon.png"; // Replace with the actual URL of your icon
-  icon.classList.add("icon");
-  element.appendChild(icon);
-
   let isFast = false;
 
   const handleClick = () => {
@@ -40,6 +33,12 @@ async function typeSentence(element, sentence, delay, fastDelay) {
     element.innerHTML += char;
     await sleep(isFast ? fastDelay : delay);
   }
+
+  // Append the icon at the end of the sentence
+  const icon = document.createElement("img");
+  icon.src = "icon.png"; // Replace with the actual URL of your icon
+  icon.classList.add("icon");
+  element.appendChild(icon);
 
   document.removeEventListener('click', handleClick);
   document.removeEventListener('keydown', handleKeyDown);
