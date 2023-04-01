@@ -1,6 +1,6 @@
 // Constants
-const TYPEWRITER_DELAY_MS = 20;
-const TYPEWRITER_FAST_DELAY_MS = 1;
+const TYPEWRITER_DELAY_MS = 25;
+const TYPEWRITER_FAST_DELAY_MS = 0.2;
 
 // Helper function to fetch and parse text
 async function getText(url) {
@@ -56,54 +56,45 @@ async function typeSentence(element, sentence, delay) {
 
 // Main function
 async function initializePage() {
-  const container = document.querySelector('.container');
-  const sentences = await getText('text.txt');
+  const container = document.querySelector(".container");
+  const sentences = await getText("text.txt");
   const paragraphs = [];
 
   for (const sentence of sentences) {
-    const paragraph = document.createElement('p');
-    container.appendChild(paragraph);
+    const paragraph = document.createElement("p");
     paragraphs.push(paragraph);
 
     await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS);
 
-    // Check if the container is overflowing and remove the earliest paragraphs
+    container.appendChild(paragraph);
+
     while (isOverflowing(container)) {
       const removedParagraph = paragraphs.shift();
       container.removeChild(removedParagraph);
     }
 
-    // Wait for user input to continue
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       const continueTyping = () => {
-        document.removeEventListener('click', continueTyping);
-        document.removeEventListener('keydown', spacebarHandler);
+        document.removeEventListener("click", continueTyping);
+        document.removeEventListener("keydown", spacebarHandler);
         resolve();
       };
 
-      const spacebarHandler = event => {
-        if (event.code === 'Space') {
+      const spacebarHandler = (event) => {
+        if (event.code === "Space") {
           continueTyping();
           event.preventDefault();
         }
       };
 
-      document.addEventListener('click', continueTyping);
-      document.addEventListener('keydown', spacebarHandler);
+      document.addEventListener("click", continueTyping);
+      document.addEventListener("keydown", spacebarHandler);
     });
   }
 }
 
-// Helper function to check if an element is overflowing
 function isOverflowing(element) {
-  const containerStyle = window.getComputedStyle(element);
-  const containerPaddingTop = parseFloat(containerStyle.paddingTop);
-  const containerPaddingBottom = parseFloat(containerStyle.paddingBottom);
-  const containerHeight = element.clientHeight - containerPaddingTop - containerPaddingBottom;
-
-  const paragraphsHeight = Array.from(element.children).reduce((sum, child) => sum + child.offsetHeight, 0);
-
-  return paragraphsHeight > containerHeight;
+  return element.scrollHeight > element.clientHeight;
 }
 
 // Start the script when the DOM is ready
