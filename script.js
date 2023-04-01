@@ -17,7 +17,7 @@ async function typeSentence(element, sentence, delay) {
     let fastMode = false;
 
     const intervalId = setInterval(() => {
-      element.textContent += sentence[i];
+      element.textContent += sentence.charAt(i);
       i++;
 
       if (i >= sentence.length) {
@@ -33,7 +33,7 @@ async function typeSentence(element, sentence, delay) {
         clearInterval(intervalId);
 
         intervalId = setInterval(() => {
-          element.textContent += sentence[i];
+          element.textContent += sentence.charAt(i);
           i++;
 
           if (i >= sentence.length) {
