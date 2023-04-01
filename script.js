@@ -1,6 +1,6 @@
 // Constants
-const TYPEWRITER_DELAY_MS = 25;
-const TYPEWRITER_FAST_DELAY_MS = 0.2;
+const TYPEWRITER_DELAY_MS = 50;
+const TYPEWRITER_FAST_DELAY_MS = 5;
 
 // Helper function to fetch and parse text
 async function getText(url) {
@@ -12,11 +12,30 @@ async function getText(url) {
 
 // Typewriter effect
 async function typeSentence(element, sentence, delay) {
+  let isFast = false;
+
+  const handleClick = () => {
+    isFast = true;
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.code === 'Space') {
+      isFast = true;
+      event.preventDefault();
+    }
+  };
+
+  document.addEventListener('click', handleClick);
+  document.addEventListener('keydown', handleKeyDown);
+
   for (let i = 0; i < sentence.length; i++) {
     const char = sentence[i];
     element.innerHTML += char;
-    await sleep(delay);
+    await sleep(isFast ? TYPEWRITER_FAST_DELAY_MS : delay);
   }
+
+  document.removeEventListener('click', handleClick);
+  document.removeEventListener('keydown', handleKeyDown);
 }
 
 // Main function
@@ -36,7 +55,6 @@ async function initializePage() {
     while (isOverflowing(container)) {
       const removedParagraph = paragraphs.shift();
       container.removeChild(removedParagraph);
-      container.removeChild(container.firstChild); // Add this line
     }
 
     await new Promise((resolve) => {
@@ -65,3 +83,8 @@ function isOverflowing(element) {
 
 // Start the script when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializePage);
+
+// Sleep function
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
