@@ -11,7 +11,7 @@ async function getText(url) {
 }
 
 // Typewriter effect
-async function typeSentence(element, sentence, delay, fastDelay) {
+async function typeSentence(element, sentence, delay, fastDelay, isLast) {
   let isFast = false;
 
   const handleClick = () => {
@@ -34,11 +34,13 @@ async function typeSentence(element, sentence, delay, fastDelay) {
     await sleep(isFast ? fastDelay : delay);
   }
 
-  // Append the icon at the end of the sentence
-  const icon = document.createElement("img");
-  icon.src = "icon.png"; // Replace with the actual URL of your icon
-  icon.classList.add("icon");
-  element.appendChild(icon);
+  // Append the icon at the end of the sentence if it's the last one
+  if (isLast) {
+    const icon = document.createElement("img");
+    icon.src = "icon_url_here"; // Replace with the actual URL of your icon
+    icon.classList.add("icon");
+    element.appendChild(icon);
+  }
 
   document.removeEventListener('click', handleClick);
   document.removeEventListener('keydown', handleKeyDown);
@@ -66,23 +68,40 @@ async function typeSentence(element, sentence, delay, fastDelay) {
 async function initializePage() {
   const container = document.querySelector(".container");
   const sentences = await getText("text.txt");
+  const paragraphs = [];
 
-  let currentParagraph = document.createElement("p");
-  container.appendChild(currentParagraph);
+  for (const [index, sentence] of sentences.entries()) {
+    const paragraph = document.createElement("p");
+    paragraphs.push(paragraph);
 
-  for (const sentence of sentences) {
-    await typeSentence(currentParagraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
+    const isLast = index === sentences.length - 1;
+    await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS, isLast);
 
-    if (isOverflowing(container)) {
-      while (container.firstChild) {
-        container.removeChild(container.firstChild);
-      }
-      currentParagraph = document.createElement("p");
-      container.appendChild(currentParagraph);
-    } else {
-      currentParagraph = document.createElement("p");
-      container.appendChild(currentParagraph);
+    container.appendChild(paragraph);
+
+    while (isOverflowing(container)) {
+      const removedParagraph = paragraphs.shift();
+      container.removeChild(removedParagraph);
+      container.removeChild(container.firstChild);
     }
+
+    await new Promise((resolve) => {
+      const continueTyping = () => {
+        document.removeEventListener("click", continueTyping);
+        document.removeEventListener("keydown", spacebarHandler);
+        resolve();
+      };
+
+      const spacebarHandler = (event) => {
+        if (event.code === "Space") {
+          continueTyping();
+          event.preventDefault();
+        }
+      };
+
+      document.addEventListener("click", continueTyping);
+      document.addEventListener("keydown", spacebarHandler);
+    });
   }
 }
 
