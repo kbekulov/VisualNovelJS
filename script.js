@@ -36,7 +36,7 @@ async function typeSentence(element, sentence, delay, fastDelay) {
 
   // Append the icon at the end of the sentence
   const icon = document.createElement("img");
-  icon.src = "icon_url_here"; // Replace with the actual URL of your icon
+  icon.src = "icon.png"; // Replace with the actual URL of your icon
   icon.classList.add("icon");
   element.appendChild(icon);
 
