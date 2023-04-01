@@ -1,6 +1,6 @@
 // Constants
-const TYPEWRITER_DELAY_MS = 100;
-const TYPEWRITER_FAST_DELAY_MS = 10;
+const TYPEWRITER_DELAY_MS = 50;
+const TYPEWRITER_FAST_DELAY_MS = 5;
 
 // Helper function to fetch and parse text
 async function getText(url) {
