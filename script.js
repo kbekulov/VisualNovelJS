@@ -1,4 +1,5 @@
 const WORDS_PER_CHUNK = 200;
+const TYPEWRITER_DELAY_MS = 50;
 
 function getQueryParam(name, defaultValue) {
   const params = new URLSearchParams(window.location.search);
@@ -27,8 +28,27 @@ function updateContent(order) {
         chunks.push(currentChunk.trim());
       }
 
-      const content = chunks[(order - 1) % chunks.length].replace(/\n/g, '<br>');
-      contentElement.innerHTML = content;
+      const content = chunks[(order - 1) % chunks.length];
+      let currentText = '';
+      let currentIndex = 0;
+      let isTyping = true;
+
+      const intervalId = setInterval(() => {
+        if (!isTyping) {
+          clearInterval(intervalId);
+          return;
+        }
+
+        if (currentIndex >= content.length) {
+          isTyping = false;
+          return;
+        }
+
+        currentText += content[currentIndex];
+        currentIndex++;
+
+        contentElement.innerHTML = currentText.replace(/\n/g, '<br>');
+      }, TYPEWRITER_DELAY_MS);
     })
     .catch(error => {
       console.error('Error fetching text:', error);
