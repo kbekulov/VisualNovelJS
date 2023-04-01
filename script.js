@@ -12,64 +12,26 @@ async function getText(url) {
 
 // Typewriter effect
 async function typeSentence(element, sentence, delay) {
-  return new Promise(async resolve => {
-    let i = 0;
-    let fastMode = false;
-
-    const intervalId = setInterval(() => {
-      element.textContent += sentence.charAt(i);
-      i++;
-
-      if (i >= sentence.length) {
-        clearInterval(intervalId);
-        resolve();
-      }
-    }, fastMode ? delay / 10 : delay);
-
-    // Event listeners for faster typing
-    const speedUpTyping = () => {
-      if (!fastMode) {
-        fastMode = true;
-        clearInterval(intervalId);
-
-        intervalId = setInterval(() => {
-          element.textContent += sentence.charAt(i);
-          i++;
-
-          if (i >= sentence.length) {
-            clearInterval(intervalId);
-            resolve();
-          }
-        }, TYPEWRITER_FAST_DELAY_MS);
-      }
-    };
-
-    document.addEventListener('click', speedUpTyping);
-    document.addEventListener('keydown', event => {
-      if (event.code === 'Space') {
-        speedUpTyping();
-        event.preventDefault();
-      }
-    });
-  });
+  for (let i = 0; i < sentence.length; i++) {
+    const char = sentence[i];
+    element.innerHTML += char;
+    await sleep(delay);
+  }
 }
 
 // Main function
 async function initializePage() {
   const container = document.querySelector(".container");
   const sentences = await getText("text.txt");
-  const paragraphs = [];
 
   for (const sentence of sentences) {
     const paragraph = document.createElement("p");
-    paragraphs.push(paragraph);
+    container.appendChild(paragraph);
 
     await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS);
 
-    container.appendChild(paragraph);
-
     while (isOverflowing(container)) {
-      const removedParagraph = paragraphs.shift();
+      const removedParagraph = container.firstChild;
       container.removeChild(removedParagraph);
     }
 
