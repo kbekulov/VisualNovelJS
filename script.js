@@ -106,6 +106,5 @@ function isOverflowing(element) {
   return paragraphsHeight > containerHeight;
 }
 
-
 // Start the script when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializePage);
