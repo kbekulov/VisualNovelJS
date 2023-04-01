@@ -1,5 +1,6 @@
 const WORDS_PER_CHUNK = 200;
 const TYPEWRITER_DELAY_MS = 50;
+const TYPEWRITER_END_PAUSE_MS = 1000;
 
 function getQueryParam(name, defaultValue) {
   const params = new URLSearchParams(window.location.search);
@@ -28,10 +29,11 @@ function updateContent(order) {
         chunks.push(currentChunk.trim());
       }
 
-      const content = chunks[(order - 1) % chunks.length];
+      let currentChunkIndex = (order - 1) % chunks.length;
       let currentText = '';
       let currentIndex = 0;
       let isTyping = true;
+      let isSentenceEnd = false;
 
       const intervalId = setInterval(() => {
         if (!isTyping) {
@@ -39,16 +41,47 @@ function updateContent(order) {
           return;
         }
 
-        if (currentIndex >= content.length) {
-          isTyping = false;
+        if (currentIndex >= chunks[currentChunkIndex].length) {
+          if (isSentenceEnd) {
+            isTyping = false;
+            setTimeout(() => {
+              isTyping = true;
+              isSentenceEnd = false;
+              currentChunkIndex = (currentChunkIndex + 1) % chunks.length;
+              currentIndex = 0;
+            }, TYPEWRITER_END_PAUSE_MS);
+          } else {
+            isSentenceEnd = true;
+          }
           return;
         }
 
-        currentText += content[currentIndex];
+        currentText += chunks[currentChunkIndex][currentIndex];
         currentIndex++;
 
         contentElement.innerHTML = currentText.replace(/\n/g, '<br>');
       }, TYPEWRITER_DELAY_MS);
+
+      document.addEventListener('click', () => {
+        if (isSentenceEnd) {
+          isTyping = true;
+          isSentenceEnd = false;
+          currentChunkIndex = (currentChunkIndex + 1) % chunks.length;
+          currentIndex = 0;
+        }
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.code === 'Space') {
+          if (isSentenceEnd) {
+            isTyping = true;
+            isSentenceEnd = false;
+            currentChunkIndex = (currentChunkIndex + 1) % chunks.length;
+            currentIndex = 0;
+            event.preventDefault();
+          }
+        }
+      });
     })
     .catch(error => {
       console.error('Error fetching text:', error);
@@ -59,21 +92,6 @@ function initializePage() {
   const order = getQueryParam('order', 1);
   window.history.replaceState({}, document.title, window.location.pathname + `?order=${order}`);
   updateContent(order);
-
-  document.addEventListener('click', () => {
-    const newOrder = Number(getQueryParam('order', 1)) + 1;
-    window.history.replaceState({}, document.title, window.location.pathname + `?order=${newOrder}`);
-    updateContent(newOrder);
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.code === 'Space') {
-      const newOrder = Number(getQueryParam('order', 1)) + 1;
-      window.history.replaceState({}, document.title, window.location.pathname + `?order=${newOrder}`);
-      updateContent(newOrder);
-      event.preventDefault();
-    }
-  });
 }
 
 initializePage();
