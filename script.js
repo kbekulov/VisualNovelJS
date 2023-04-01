@@ -68,7 +68,9 @@ async function initializePage() {
     await typeSentence(currentParagraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
 
     if (isOverflowing(container)) {
-      container.removeChild(container.firstChild);
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
       currentParagraph = document.createElement("p");
       container.appendChild(currentParagraph);
     } else {
