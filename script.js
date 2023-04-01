@@ -1,17 +1,9 @@
-const TYPEWRITER_DELAY_MS = 50;
-const TYPEWRITER_END_PAUSE_MS = 1000;
-const MAX_LINES = 10;
-
-function getQueryParam(name, defaultValue) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(name) || defaultValue;
-}
-
-function updateContent(order) {
+function initializePage() {
+  const order = getQueryParam('order', 1);
+  window.history.replaceState({}, document.title, window.location.pathname + `?order=${order}`);
   fetch('text.txt')
     .then(response => response.text())
     .then(data => {
-      const contentElement = document.getElementById('content');
       const sentences = data.match(/[^.!?]+[.!?]+/g).map(sentence => sentence.trim());
       let currentIndex = (order - 1) % sentences.length;
       let previousIndices = [];
@@ -19,6 +11,21 @@ function updateContent(order) {
       let currentIndexInText = 0;
       let isTyping = true;
       let isSentenceEnd = false;
+
+      const contentElement = document.getElementById('content');
+
+      function updateDisplayedContent() {
+        let displayedText = '';
+        for (let i = 0; i < previousIndices.length; i++) {
+          const sentence = sentences[previousIndices[i]];
+          displayedText += sentence;
+          if (i < previousIndices.length - 1) {
+            displayedText += '<br>';
+          }
+        }
+        displayedText += currentText.substring(0, currentIndexInText).replace(/\n/g, '<br>');
+        contentElement.innerHTML = displayedText;
+      }
 
       const intervalId = setInterval(() => {
         if (!isTyping) {
@@ -61,19 +68,25 @@ function updateContent(order) {
         updateDisplayedContent();
       }, TYPEWRITER_DELAY_MS);
 
-      function updateDisplayedContent() {
-        let displayedText = '';
-        for (let i = 0; i < previousIndices.length; i++) {
-          const sentence = sentences[previousIndices[i]];
-          displayedText += sentence;
-          if (i < previousIndices.length - 1) {
-            displayedText += '<br>';
-          }
-        }
-        displayedText += currentText.substring(0, currentIndexInText).replace(/\n/g, '<br>');
-        contentElement.innerHTML = displayedText;
+      document.addEventListener('click', () => {
+        if (isSentenceEnd) {
+          isTyping = true;
+          isSentenceEnd = false;
+          currentIndex = (currentIndex + 1) % sentences.length;
+          previousIndices.push(currentIndex);
+          currentIndexInText = 0;
 
-        document.addEventListener('click', () => {
+          if (previousIndices.length > MAX_LINES) {
+            const startIndex = previousIndices.length - MAX_LINES;
+            previousIndices = previousIndices.slice(startIndex);
+          }
+
+          updateDisplayedContent();
+        }
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.code === 'Space') {
           if (isSentenceEnd) {
             isTyping = true;
             isSentenceEnd = false;
@@ -87,41 +100,15 @@ function updateContent(order) {
             }
 
             updateDisplayedContent();
+            event.preventDefault();
           }
-        });
-
-        document.addEventListener('keydown', event => {
-          if (event.code === 'Space') {
-            if (isSentenceEnd) {
-              isTyping = true;
-              isSentenceEnd = false;
-              currentIndex = (currentIndex + 1) % sentences.length;
-              previousIndices.push(currentIndex);
-              currentIndexInText = 0;
-  
-              if (previousIndices.length > MAX_LINES) {
-                const startIndex = previousIndices.length - MAX_LINES;
-                previousIndices = previousIndices.slice(startIndex);
-              }
-  
-              updateDisplayedContent();
-              event.preventDefault();
-            }
-          });
         }
-  
-        updateDisplayedContent();
-      })
-      .catch(error => {
-        console.error('Error fetching text:', error);
       });
-  }
-  
-  function initializePage() {
-    const order = getQueryParam('order', 1);
-    window.history.replaceState({}, document.title, window.location.pathname + `?order=${order}`);
-    updateContent(order);
-  }
-  
-  initializePage();
-  
+
+      updateDisplayedContent();
+    })
+    .catch(error => {
+      console.error('Error fetching text:', error);
+    });
+}
+
