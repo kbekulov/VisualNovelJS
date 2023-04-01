@@ -13,21 +13,14 @@ async function getText(url) {
 // Typewriter effect
 async function typeSentence(element, sentence, delay, fastDelay) {
   let isFast = false;
-  let isPaused = false;
 
   const handleClick = () => {
     isFast = true;
-    if (isPaused) {
-      isPaused = false;
-    }
   };
 
   const handleKeyDown = (event) => {
     if (event.code === 'Space') {
       isFast = true;
-      if (isPaused) {
-        isPaused = false;
-      }
       event.preventDefault();
     }
   };
@@ -36,21 +29,31 @@ async function typeSentence(element, sentence, delay, fastDelay) {
   document.addEventListener('keydown', handleKeyDown);
 
   for (let i = 0; i < sentence.length; i++) {
-    if (isPaused) {
-      await sleep(50);
-      continue;
-    }
     const char = sentence[i];
     element.innerHTML += char;
     await sleep(isFast ? fastDelay : delay);
   }
 
-  isPaused = true;
-
   document.removeEventListener('click', handleClick);
   document.removeEventListener('keydown', handleKeyDown);
 
-  return isPaused;
+  return new Promise((resolve) => {
+    const continueTyping = () => {
+      document.removeEventListener('click', continueTyping);
+      document.removeEventListener('keydown', spacebarHandler);
+      resolve();
+    };
+
+    const spacebarHandler = (event) => {
+      if (event.code === 'Space') {
+        continueTyping();
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('click', continueTyping);
+    document.addEventListener('keydown', spacebarHandler);
+  });
 }
 
 // Main function
@@ -62,11 +65,7 @@ async function initializePage() {
   container.appendChild(currentParagraph);
 
   for (const sentence of sentences) {
-    const isPaused = await typeSentence(currentParagraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
-
-    while (isPaused) {
-      await sleep(50);
-    }
+    await typeSentence(currentParagraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
 
     if (isOverflowing(container)) {
       container.removeChild(container.firstChild);
