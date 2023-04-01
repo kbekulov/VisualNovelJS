@@ -80,6 +80,6 @@ p {
     filter: blur(0);
   }
   25%, 75% {
-    filter: blur(2px);
+    filter: blur(20px);
   }
 }
