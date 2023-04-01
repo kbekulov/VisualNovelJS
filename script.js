@@ -67,44 +67,22 @@ async function initializePage() {
   const container = document.querySelector(".container");
   const sentences = await getText("text.txt");
 
-  let previousParagraph;
+  let currentParagraph = document.createElement("p");
+  container.appendChild(currentParagraph);
 
   for (const sentence of sentences) {
-    const paragraph = document.createElement("p");
+    await typeSentence(currentParagraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
 
-    await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
-    container.appendChild(paragraph);
-
-    // Hide the icon of the previous sentence
-    if (previousParagraph) {
-      const previousIcon = previousParagraph.querySelector(".icon");
-      if (previousIcon) {
-        previousIcon.style.display = "none";
+    if (isOverflowing(container)) {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
       }
+      currentParagraph = document.createElement("p");
+      container.appendChild(currentParagraph);
+    } else {
+      currentParagraph = document.createElement("p");
+      container.appendChild(currentParagraph);
     }
-    previousParagraph = paragraph;
-
-    while (isOverflowing(container)) {
-      container.removeChild(container.firstChild);
-    }
-
-    await new Promise((resolve) => {
-      const continueTyping = () => {
-        document.removeEventListener("click", continueTyping);
-        document.removeEventListener("keydown", spacebarHandler);
-        resolve();
-      };
-
-      const spacebarHandler = (event) => {
-        if (event.code === "Space") {
-          continueTyping();
-          event.preventDefault();
-        }
-      };
-
-      document.addEventListener("click", continueTyping);
-      document.addEventListener("keydown", spacebarHandler);
-    });
   }
 }
 
