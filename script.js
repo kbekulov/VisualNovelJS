@@ -1,6 +1,6 @@
 // Constants
-const TYPEWRITER_DELAY_MS = 50;
-const TYPEWRITER_FAST_DELAY_MS = 5;
+const TYPEWRITER_DELAY_MS = 25;
+const TYPEWRITER_FAST_DELAY_MS = 0.2;
 
 // Helper function to fetch and parse text
 async function getText(url) {
@@ -12,6 +12,13 @@ async function getText(url) {
 
 // Typewriter effect
 async function typeSentence(element, sentence, delay, fastDelay) {
+
+  // Append the icon at the end of the sentence
+  const icon = document.createElement("img");
+  icon.src = "icon.png"; // Replace with the actual URL of your icon
+  icon.classList.add("icon");
+  element.appendChild(icon);
+
   let isFast = false;
 
   const handleClick = () => {
@@ -61,22 +68,44 @@ async function initializePage() {
   const container = document.querySelector(".container");
   const sentences = await getText("text.txt");
 
-  let currentParagraph = document.createElement("p");
-  container.appendChild(currentParagraph);
+  let previousParagraph;
 
   for (const sentence of sentences) {
-    await typeSentence(currentParagraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
+    const paragraph = document.createElement("p");
 
-    if (isOverflowing(container)) {
-      while (container.firstChild) {
-        container.removeChild(container.firstChild);
+    await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
+    container.appendChild(paragraph);
+
+    // Hide the icon of the previous sentence
+    if (previousParagraph) {
+      const previousIcon = previousParagraph.querySelector(".icon");
+      if (previousIcon) {
+        previousIcon.style.display = "none";
       }
-      currentParagraph = document.createElement("p");
-      container.appendChild(currentParagraph);
-    } else {
-      currentParagraph = document.createElement("p");
-      container.appendChild(currentParagraph);
     }
+    previousParagraph = paragraph;
+
+    while (isOverflowing(container)) {
+      container.removeChild(container.firstChild);
+    }
+
+    await new Promise((resolve) => {
+      const continueTyping = () => {
+        document.removeEventListener("click", continueTyping);
+        document.removeEventListener("keydown", spacebarHandler);
+        resolve();
+      };
+
+      const spacebarHandler = (event) => {
+        if (event.code === "Space") {
+          continueTyping();
+          event.preventDefault();
+        }
+      };
+
+      document.addEventListener("click", continueTyping);
+      document.addEventListener("keydown", spacebarHandler);
+    });
   }
 }
 
