@@ -1,115 +1,96 @@
-function initializePage() {
-  const order = getQueryParam('order', 1);
-  window.history.replaceState({}, document.title, window.location.pathname + `?order=${order}`);
-  fetch('text.txt')
-    .then(response => response.text())
-    .then(data => {
-      const sentences = data.match(/[^.!?]+[.!?]+/g).map(sentence => sentence.trim());
-      let currentIndex = (order - 1) % sentences.length;
-      let previousIndices = [];
-      let currentText = '';
-      let currentIndexInText = 0;
-      let isTyping = true;
-      let isSentenceEnd = false;
+// Constants
+const TYPEWRITER_DELAY_MS = 100;
+const TYPEWRITER_FAST_DELAY_MS = 10;
 
-      const contentElement = document.getElementById('content');
-
-      function updateDisplayedContent() {
-        let displayedText = '';
-        for (let i = 0; i < previousIndices.length; i++) {
-          const sentence = sentences[previousIndices[i]];
-          displayedText += sentence;
-          if (i < previousIndices.length - 1) {
-            displayedText += '<br>';
-          }
-        }
-        displayedText += currentText.substring(0, currentIndexInText).replace(/\n/g, '<br>');
-        contentElement.innerHTML = displayedText;
-      }
-
-      const intervalId = setInterval(() => {
-        if (!isTyping) {
-          clearInterval(intervalId);
-          return;
-        }
-
-        if (currentIndexInText >= sentences[currentIndex].length) {
-          if (isSentenceEnd) {
-            isTyping = false;
-            setTimeout(() => {
-              isTyping = true;
-              isSentenceEnd = false;
-              currentIndex = (currentIndex + 1) % sentences.length;
-              previousIndices.push(currentIndex);
-              currentIndexInText = 0;
-
-              if (previousIndices.length > MAX_LINES) {
-                const startIndex = previousIndices.length - MAX_LINES;
-                previousIndices = previousIndices.slice(startIndex);
-              }
-
-              updateDisplayedContent();
-            }, TYPEWRITER_END_PAUSE_MS);
-          } else {
-            isSentenceEnd = true;
-          }
-          return;
-        }
-
-        currentText += sentences[currentIndex][currentIndexInText];
-        currentIndexInText++;
-
-        if (sentences[currentIndex][currentIndexInText - 1] === '.' || sentences[currentIndex][currentIndexInText - 1] === '?' || sentences[currentIndex][currentIndexInText - 1] === '!') {
-          isSentenceEnd = true;
-        } else if (isSentenceEnd && sentences[currentIndex][currentIndexInText - 1].match(/\w/)) {
-          isSentenceEnd = false;
-        }
-
-        updateDisplayedContent();
-      }, TYPEWRITER_DELAY_MS);
-
-      document.addEventListener('click', () => {
-        if (isSentenceEnd) {
-          isTyping = true;
-          isSentenceEnd = false;
-          currentIndex = (currentIndex + 1) % sentences.length;
-          previousIndices.push(currentIndex);
-          currentIndexInText = 0;
-
-          if (previousIndices.length > MAX_LINES) {
-            const startIndex = previousIndices.length - MAX_LINES;
-            previousIndices = previousIndices.slice(startIndex);
-          }
-
-          updateDisplayedContent();
-        }
-      });
-
-      document.addEventListener('keydown', event => {
-        if (event.code === 'Space') {
-          if (isSentenceEnd) {
-            isTyping = true;
-            isSentenceEnd = false;
-            currentIndex = (currentIndex + 1) % sentences.length;
-            previousIndices.push(currentIndex);
-            currentIndexInText = 0;
-
-            if (previousIndices.length > MAX_LINES) {
-              const startIndex = previousIndices.length - MAX_LINES;
-              previousIndices = previousIndices.slice(startIndex);
-            }
-
-            updateDisplayedContent();
-            event.preventDefault();
-          }
-        }
-      });
-
-      updateDisplayedContent();
-    })
-    .catch(error => {
-      console.error('Error fetching text:', error);
-    });
+// Helper function to fetch and parse text
+async function getText(url) {
+  const response = await fetch(url);
+  const text = await response.text();
+  const sentences = text.match(/[^.!?]+[.!?]+/g).map(sentence => sentence.trim());
+  return sentences;
 }
 
+// Typewriter effect
+async function typeSentence(element, sentence, delay) {
+  return new Promise(async resolve => {
+    let i = 0;
+    let fastMode = false;
+
+    const intervalId = setInterval(() => {
+      element.textContent += sentence[i];
+      i++;
+
+      if (i >= sentence.length) {
+        clearInterval(intervalId);
+        resolve();
+      }
+    }, fastMode ? delay / 10 : delay);
+
+    // Event listeners for faster typing
+    const speedUpTyping = () => {
+      if (!fastMode) {
+        fastMode = true;
+        clearInterval(intervalId);
+
+        intervalId = setInterval(() => {
+          element.textContent += sentence[i];
+          i++;
+
+          if (i >= sentence.length) {
+            clearInterval(intervalId);
+            resolve();
+          }
+        }, TYPEWRITER_FAST_DELAY_MS);
+      }
+    };
+
+    document.addEventListener('click', speedUpTyping);
+    document.addEventListener('keydown', event => {
+      if (event.code === 'Space') {
+        speedUpTyping();
+        event.preventDefault();
+      }
+    });
+  });
+}
+
+// Main function
+async function initializePage() {
+  const container = document.querySelector('.container');
+  const sentences = await getText('text.txt');
+
+  for (const sentence of sentences) {
+    const paragraph = document.createElement('p');
+    container.appendChild(paragraph);
+
+    await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS);
+
+    // Check if the container is overflowing
+    if (container.scrollHeight > container.clientHeight) {
+      container.innerHTML = ''; // Clear the container
+      container.appendChild(paragraph); // Add the current paragraph
+    }
+
+    // Wait for user input to continue
+    await new Promise(resolve => {
+      const continueTyping = () => {
+        document.removeEventListener('click', continueTyping);
+        document.removeEventListener('keydown', spacebarHandler);
+        resolve();
+      };
+
+      const spacebarHandler = event => {
+        if (event.code === 'Space') {
+          continueTyping();
+          event.preventDefault();
+        }
+      };
+
+      document.addEventListener('click', continueTyping);
+      document.addEventListener('keydown', spacebarHandler);
+    });
+  }
+}
+
+// Start the script when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializePage);
