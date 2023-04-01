@@ -5,16 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <title>Custom Webpage</title>
+  <script src="script.js"></script>
 </head>
 <body>
   <div class="vignette"></div>
   <div class="container">
     <p id="content"></p>
   </div>
-  <script src="script.js"></script>
-  <script>
-    const order = 2;
-    window.history.replaceState({}, document.title, window.location.pathname + `?order=${order}`);
-  </script>
 </body>
 </html>
