@@ -20,7 +20,7 @@ body, html {
   background-repeat: no-repeat;
   background-size: cover;
   z-index: -2;
-  animation: panZoom 40s infinite alternate;
+  animation: panZoom 80s infinite alternate;
 }
 
 .vignette {
