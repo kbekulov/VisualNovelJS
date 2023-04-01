@@ -23,16 +23,20 @@ async function typeSentence(element, sentence, delay) {
 async function initializePage() {
   const container = document.querySelector(".container");
   const sentences = await getText("text.txt");
+  const paragraphs = [];
 
   for (const sentence of sentences) {
     const paragraph = document.createElement("p");
-    container.appendChild(paragraph);
+    paragraphs.push(paragraph);
 
     await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS);
 
+    container.appendChild(paragraph);
+
     while (isOverflowing(container)) {
-      const removedParagraph = container.firstChild;
+      const removedParagraph = paragraphs.shift();
       container.removeChild(removedParagraph);
+      container.removeChild(container.firstChild); // Add this line
     }
 
     await new Promise((resolve) => {
