@@ -11,7 +11,7 @@ async function getText(url) {
 }
 
 // Typewriter effect
-async function typeSentence(element, sentence, delay, fastDelay, isLast) {
+async function typeSentence(element, sentence, delay, fastDelay) {
   let isFast = false;
 
   const handleClick = () => {
@@ -34,13 +34,11 @@ async function typeSentence(element, sentence, delay, fastDelay, isLast) {
     await sleep(isFast ? fastDelay : delay);
   }
 
-  // Append the icon at the end of the sentence if it's the last one
-  if (isLast) {
-    const icon = document.createElement("img");
-    icon.src = "icon_url_here"; // Replace with the actual URL of your icon
-    icon.classList.add("icon");
-    element.appendChild(icon);
-  }
+  // Append the icon at the end of the sentence
+  const icon = document.createElement("img");
+  icon.src = "icon.png"; // Replace with the actual URL of your icon
+  icon.classList.add("icon");
+  element.appendChild(icon);
 
   document.removeEventListener('click', handleClick);
   document.removeEventListener('keydown', handleKeyDown);
@@ -68,20 +66,25 @@ async function typeSentence(element, sentence, delay, fastDelay, isLast) {
 async function initializePage() {
   const container = document.querySelector(".container");
   const sentences = await getText("text.txt");
-  const paragraphs = [];
 
-  for (const [index, sentence] of sentences.entries()) {
+  let previousParagraph;
+
+  for (const sentence of sentences) {
     const paragraph = document.createElement("p");
-    paragraphs.push(paragraph);
 
-    const isLast = index === sentences.length - 1;
-    await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS, isLast);
-
+    await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
     container.appendChild(paragraph);
 
+    // Hide the icon of the previous sentence
+    if (previousParagraph) {
+      const previousIcon = previousParagraph.querySelector(".icon");
+      if (previousIcon) {
+        previousIcon.style.display = "none";
+      }
+    }
+    previousParagraph = paragraph;
+
     while (isOverflowing(container)) {
-      const removedParagraph = paragraphs.shift();
-      container.removeChild(removedParagraph);
       container.removeChild(container.firstChild);
     }
 
