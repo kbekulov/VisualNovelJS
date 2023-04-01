@@ -11,7 +11,7 @@ async function getText(url) {
 }
 
 // Typewriter effect
-async function typeSentence(element, sentence, delay) {
+async function typeSentence(element, sentence, delay, fastDelay) {
   let isFast = false;
 
   const handleClick = () => {
@@ -31,7 +31,7 @@ async function typeSentence(element, sentence, delay) {
   for (let i = 0; i < sentence.length; i++) {
     const char = sentence[i];
     element.innerHTML += char;
-    await sleep(isFast ? TYPEWRITER_FAST_DELAY_MS : delay);
+    await sleep(isFast ? fastDelay : delay);
   }
 
   document.removeEventListener('click', handleClick);
@@ -42,38 +42,21 @@ async function typeSentence(element, sentence, delay) {
 async function initializePage() {
   const container = document.querySelector(".container");
   const sentences = await getText("text.txt");
-  const paragraphs = [];
+
+  let currentParagraph = document.createElement("p");
+  container.appendChild(currentParagraph);
 
   for (const sentence of sentences) {
-    const paragraph = document.createElement("p");
-    paragraphs.push(paragraph);
+    await typeSentence(currentParagraph, sentence, TYPEWRITER_DELAY_MS, TYPEWRITER_FAST_DELAY_MS);
 
-    await typeSentence(paragraph, sentence, TYPEWRITER_DELAY_MS);
-
-    container.appendChild(paragraph);
-
-    while (isOverflowing(container)) {
-      const removedParagraph = paragraphs.shift();
-      container.removeChild(removedParagraph);
+    if (isOverflowing(container)) {
+      container.removeChild(container.firstChild);
+      currentParagraph = document.createElement("p");
+      container.appendChild(currentParagraph);
+    } else {
+      currentParagraph = document.createElement("p");
+      container.appendChild(currentParagraph);
     }
-
-    await new Promise((resolve) => {
-      const continueTyping = () => {
-        document.removeEventListener("click", continueTyping);
-        document.removeEventListener("keydown", spacebarHandler);
-        resolve();
-      };
-
-      const spacebarHandler = (event) => {
-        if (event.code === "Space") {
-          continueTyping();
-          event.preventDefault();
-        }
-      };
-
-      document.addEventListener("click", continueTyping);
-      document.addEventListener("keydown", spacebarHandler);
-    });
   }
 }
 
