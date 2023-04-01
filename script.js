@@ -28,9 +28,12 @@ async function typeSentence(element, sentence, delay, fastDelay) {
   document.addEventListener('click', handleClick);
   document.addEventListener('keydown', handleKeyDown);
 
+  const textWrapper = document.createElement('span');
+  element.appendChild(textWrapper);
+
   for (let i = 0; i < sentence.length; i++) {
     const char = sentence[i];
-    element.innerHTML += char;
+    textWrapper.innerHTML += char;
     await sleep(isFast ? fastDelay : delay);
   }
 
