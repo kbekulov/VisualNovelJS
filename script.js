@@ -27,8 +27,8 @@ function updateContent(order) {
         chunks.push(currentChunk.trim());
       }
 
-      const content = chunks[(order - 1) % chunks.length];
-      contentElement.textContent = content;
+      const content = chunks[(order - 1) % chunks.length].replace(/\n/g, '<br>');
+      contentElement.innerHTML = content;
     })
     .catch(error => {
       console.error('Error fetching text:', error);
