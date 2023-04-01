@@ -78,7 +78,7 @@ p {
     transform: scale(1) translate(0, 0);
   }
   50% {
-    transform: scale(1.01) translate(-5%, -5%);
+    transform: scale(1.1) translate(-5%, -5%);
   }
   100% {
     transform: scale(1) translate(0, 0);
@@ -90,6 +90,6 @@ p {
     filter: blur(0);
   }
   25%, 75% {
-    filter: blur(20px);
+    filter: blur(50px);
   }
 }
